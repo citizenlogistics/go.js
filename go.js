@@ -2,6 +2,8 @@
 
 // jq fns used: remove, attr, val, clone, each, is, live
 
+var development_mode = (location.protocol == 'file:');
+
 window.onerror = function (msg, uri, line) {
   report_error(msg, null, uri + ": " + line);
   return false; // don't suppress the error
@@ -40,8 +42,9 @@ $.template = function(sel){
 
 $.fn.form_values = function() {
   var obj = {};
-  for (var el in this[0].elements) {
-    if (!el.name || $(el).is('.prompting')) continue;
+  $.each(this.get(0).elements, function(){
+    var el = this;
+    if (!el.name || $(el).is('.prompting')) return;
     switch(el.type) {
       case "radio": // fall through
       case "checkbox":
@@ -52,8 +55,8 @@ $.fn.form_values = function() {
         break;
       default:
         obj[el.name] = el.value;
-    }
-  };
+    };
+  });
   return obj;
 };
 
@@ -104,14 +107,7 @@ function dispatch(method, args) {
     args = new_args.concat(args);
   }
   for(var i=0; i<chain.length; i++){
-    if(chain[i][method]){
-      try {
-        return chain[i][method].apply(chain[i], args);
-      } catch(e) {
-        report_error('error during dispatch: ' + method, e);
-      }
-      break;
-    }
+    if(chain[i][method]) return chain[i][method].guarded_apply(chain[i], args);
   }
 };
 
@@ -141,6 +137,19 @@ $(function(){
     go(href.slice(1), null, this);
     return false;
   });
+  
+  $('form').live('submit', function(){
+    var data = $(this).form_values();
+    console.log(this);
+    console.log(data);
+    $(this).disable();
+    var result = dispatch(this.id + "_submitted", data, This, this);
+    if (result != "redo") {
+      $(this).find('input[type=text],textarea').each(function(){ this.value = null; });
+    }
+    $(this).enable();
+    return false;
+  });
 });
 
 LiveHTML = { widgets: [] };
@@ -148,45 +157,9 @@ LiveHTML = { widgets: [] };
 $.fn.app_paint = function(){
   var data = {};
   function value_for(method){
-    if (!data[method]) {
-      data[method] = This[method] || dispatch(method, This);
-    }
+    if (!data[method]) data[method] = This[method] || dispatch(method, This);
     return data[method] || window[method];
   };
-  this.find('[fill]').each(function(){
-    var obj = $(this);
-    var parts = obj.attr('fill').split(' ');
-    var method = parts[0];
-    var attr = parts[1];
-    var value = value_for(method);
-    if (!value) return;
-    if (attr) obj.attr(attr, value);
-    else      obj.html(value);
-  });
-  this.find('[if]').each(function(){
-    var obj = $(this);
-    var method = obj.attr('if');
-    var reverse = false;
-    if (method.charAt(0) == '!') {
-      method = method.slice(1);
-      reverse = true;
-    }
-    var value = value_for(method);
-    if (reverse) value = !value;
-    if (value) obj.show();
-    else obj.hide();
-  });
-  this.find('form').enable().unbind('submit').submit(function(){
-    var data = $(this).form_values();
-    $(this).disable();
-    var result = dispatch(this.id + "_submitted", data, This, this);
-    if (result == "redo") {
-      $(this).enable();
-    } else {
-      $(this).find('input[type=text],textarea').each(function(){ this.value = null; });
-    }
-    return false;
-  });
   this.find('[observe]').each(function(){
     var obj = $(this);
     var methods = obj.attr('observe').split(' METHOD_SPACER ');
@@ -210,48 +183,77 @@ $.fn.app_paint = function(){
     });
     self.blur(function(){ if (!self.val()) self.val(hint).addClass('prompting'); });
   });
+  this.find('[fill]').each(function(){
+    var obj = $(this);
+    var parts = obj.attr('fill').split(' ');
+    var method = parts[0];
+    var attr = parts[1];
+    var value = value_for(method);
+    if (value instanceof String) {
+      if (attr) obj.attr(attr, value);
+      else      obj.html(value);
+    }
+  });
+  this.find('[if]').each(function(){
+    var obj = $(this);
+    var method = obj.attr('if');
+    var reverse = false;
+    if (method.charAt(0) == '!') {
+      method = method.slice(1);
+      reverse = true;
+    }
+    var value = value_for(method);
+    if (reverse) value = !value;
+    if (value) obj.show();
+    else obj.hide();
+  });
+
   this.find('input.focus').focus();
   return this;
 };
 
-
-function go(url, form_data, elem) {
-  try {
-
-    if (url == '#' || url == '' || url == '@') return;    
-    if (url.charAt(0) == '@') return App.at_link(url);
-    if (url.charAt(0) == '#') {
-      var parts = url.slice(1).split('?');
-      return dispatch(parts[0], unescape(parts[1]), elem);
-    }
-    
-    console.log('go('+url+')');
-
-    This.form_data = form_data;
-    var changed = This.changed = {};
-    This.prev_url = This.url;
-    This.url = url;
-    $.each(url.split(';'), function(){
-      var part = this.split('=');
-      set(part[0], unescape(part[1]));
-    });
-        
-    if (!This.prev_url) changed.tool = true;
-    if (changed.tool) {
-      $('.' + This.tool + '_tool').activate('tool');
-      go('#tool_unselected');
-      This.first_responders[0] = App.tools[This.tool] || {};
-      go('#tool_selected');
-    }
-    
-    App.update && App.update(This.changed);
-
-    $('.hud:visible, .magic').app_paint();
-    App.loaded = true;
-
+Function.prototype.guarded_apply = function(obj, args){
+  if (development_mode) return this.apply(obj, args);
+  else try {
+    this.apply(obj, args);
   } catch(e) {
     report_error('error during go(url): ' + url, e);
   }
+};
+
+function go(url, form_data, elem) {
+  if (url == '#' || url == '' || url == '@') return;    
+  if (url.charAt(0) == '@') return App.at_link(url);
+  if (url.charAt(0) == '#') {
+    var parts = url.slice(1).split('?');
+    return dispatch(parts[0], unescape(parts[1]), elem);
+  }
+
+  console.log('go('+url+')');
+
+  This.form_data = form_data;
+  var changed = This.changed = {};
+  This.prev_url = This.url;
+  This.url = url;
+  $.each(url.split(';'), function(){
+    var part = this.split('=');
+    set(part[0], unescape(part[1]));
+  });
+
+  if (!This.prev_url) changed.tool = true;
+
+  (function(){
+    if (changed.tool) {
+      $('.' + This.tool + '_tool').activate('tool');
+      go('#tool_unselected');
+      This.first_responders[0] = (App.tools && App.tools[This.tool]) || {};
+      go('#tool_selected');
+    }
+    if (App.update) App.update(This.changed);
+    $('.hud:visible, .magic').app_paint();
+  }).guarded_apply(this);
+
+  App.loaded = true;
 };
 
 
