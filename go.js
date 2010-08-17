@@ -2,6 +2,32 @@
 
 // jq fns used: remove, attr, val, clone, each, is, live
 
+window.onerror = function (msg, uri, line) {
+  report_error(msg, null, uri + ": " + line);
+  return false; // don't suppress the error
+};
+
+window.fbAsyncInit = function() {
+  FB.Event.subscribe('auth.sessionChange', function(response) {
+    if (response.session) $('body').addClass('fb_authed');
+    else $('body').removeClass('fb_authed');
+  });
+  FB.init({appId: '31986400134', apiKey: 'cbaf8df3f5953bdea9ce66f77c485c53', status: true, cookie: true, xfbml: true});
+};
+
+
+function report_error (msg, e, place) {
+  console.log(e);
+  var report = msg + " at " + place;
+  if (e) report += "\nException: " + e;
+  if (window.printStackTrace && e) 
+    report += '\nStack trace:\n' + printStackTrace({e:e}).join('\n') + '\n\n';
+  console.log(report);
+  $.post('/api/bugreport', {issue: report}, function(){
+    App.notify_error && App.notify_error();
+  });
+}
+
 $.templates = {};
 $.template = function(sel){
   if ($.templates[sel] === null) return;
@@ -82,7 +108,7 @@ function dispatch(method, args) {
       try {
         return chain[i][method].apply(chain[i], args);
       } catch(e) {
-        App.report_error('error during dispatch: ' + method, e);
+        report_error('error during dispatch: ' + method, e);
       }
       break;
     }
@@ -224,7 +250,7 @@ function go(url, form_data, elem) {
     App.loaded = true;
 
   } catch(e) {
-    App.report_error('error during go(url): ' + url, e);
+    report_error('error during go(url): ' + url, e);
   }
 };
 
