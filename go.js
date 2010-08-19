@@ -40,6 +40,17 @@ $.template = function(sel){
   return $.template(sel);
 };
 
+$.fn.validate_form_element = function(obj){
+  var name = this.attr('name');
+  var title = this.attr('title');
+  var required = this.attr('required');
+  var pattern = this.attr('pattern');
+  var value = this.val();
+  if (required && !value) return (obj.error = (title || name) + ".  This required element is missing.");
+  if (pattern && !value.match(pattern)) return (obj.error = (title || name) + ".  This element doesn't look right.");
+  obj[name] = value;
+};
+
 $.fn.form_values = function() {
   var obj = {};
   $.each(this.get(0).elements, function(){
@@ -54,7 +65,7 @@ $.fn.form_values = function() {
         // TODO: handle file uploads
         break;
       default:
-        obj[el.name] = el.value;
+        $(el).validate_form_element(obj);
     };
   });
   return obj;
@@ -140,8 +151,10 @@ $(function(){
   
   $('form').live('submit', function(){
     var data = $(this).form_values();
-    console.log(this);
-    console.log(data);
+    if (data.error) {
+      alert(data.error);
+      return false;
+    }
     $(this).disable();
     var result = dispatch(this.id + "_submitted", data, This, this);
     if (result != "redo") {
