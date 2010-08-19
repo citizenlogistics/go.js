@@ -9,6 +9,13 @@ window.onerror = function (msg, uri, line) {
   return false; // don't suppress the error
 };
 
+if (!window.console) {
+  window.console = {};
+  if (!console.log) {
+    console.log = function(x){};
+  }
+}
+
 window.fbAsyncInit = function() {
   FB.Event.subscribe('auth.sessionChange', function(response) {
     if (response.session) $('body').addClass('fb_authed');
