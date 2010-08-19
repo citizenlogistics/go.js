@@ -14,9 +14,24 @@ window.fbAsyncInit = function() {
     if (response.session) $('body').addClass('fb_authed');
     else $('body').removeClass('fb_authed');
   });
+  
+  FB.Event.subscribe('auth.logout', function(response) {
+    App.fb_logout && App.fb_logout();
+  });
+  
   FB.init({appId: '31986400134', apiKey: 'cbaf8df3f5953bdea9ce66f77c485c53', status: true, cookie: true, xfbml: true});
+  
+  FB.getLoginStatus(function(response){
+    if (response.session) {
+      App.fb_active_on_startup && App.fb_active_on_startup(response.session.uid)
+    } else {
+      FB.Event.subscribe('auth.login', function(response) {
+        App.fb_login && App.fb_login(response.session.uid);
+      });
+    }
+    
+  });
 };
-
 
 function report_error (msg, e, place) {
   console.log(e);
@@ -163,6 +178,9 @@ $(function(){
     $(this).enable();
     return false;
   });
+  
+  if (FB.init) { window.fbAsyncInit(); }
+  
 });
 
 LiveHTML = { widgets: [] };
