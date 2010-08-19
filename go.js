@@ -181,6 +181,9 @@ $(function(){
   
   if (FB.init) { window.fbAsyncInit(); }
   
+  if((navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i))) {
+    $('body').addClass('ios');
+  }
 });
 
 LiveHTML = { widgets: [] };
