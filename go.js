@@ -223,9 +223,11 @@ $.fn.app_paint = function(){
     var method = parts[0];
     var attr = parts[1];
     var value = value_for(method);
-    if (value instanceof String) {
+    if (typeof value.valueOf() == 'string') {
       if (attr) obj.attr(attr, value);
       else      obj.html(value);
+    } else {
+      console.log("Value ["+value+"] is not an instance of string");
     }
   });
   this.find('[if]').each(function(){
