@@ -17,27 +17,25 @@ if (!window.console) {
 }
 
 window.fbAsyncInit = function() {
+  var had_session = 'maybe';
+
   FB.Event.subscribe('auth.sessionChange', function(response) {
-    if (response.session) $('body').addClass('fb_authed');
-    else $('body').removeClass('fb_authed');
-  });
-  
-  FB.Event.subscribe('auth.logout', function(response) {
-    App.fb_logout && App.fb_logout();
+    if (response.session) {
+      if (had_session == 'maybe') {
+        App.fb_active_on_startup && App.fb_active_on_startup(response.session.uid);
+      } else if (had_session == 'no') {
+        App.fb_login && App.fb_login(response.session.uid);
+      }
+      $('body').addClass('fb_authed');
+      had_session = 'yes';
+    } else if (had_session == 'yes') {
+      $('body').removeClass('fb_authed');
+      App.fb_logout && App.fb_logout();
+      had_session = 'no';
+    }
   });
   
   FB.init({appId: '31986400134', apiKey: 'cbaf8df3f5953bdea9ce66f77c485c53', status: true, cookie: true, xfbml: true});
-  
-  FB.getLoginStatus(function(response){
-    if (response.session) {
-      App.fb_active_on_startup && App.fb_active_on_startup(response.session.uid);
-    } else {
-      FB.Event.subscribe('auth.login', function(response) {
-        App.fb_login && App.fb_login(response.session.uid);
-      });
-    }
-    
-  });
 };
 
 function report_error (msg, e, place) {
@@ -236,6 +234,7 @@ $.fn.app_paint = function(){
     var method = parts[0];
     var attr = parts[1];
     var value = value_for(method);
+    if (!value) value = '';
     if (typeof value.valueOf() == 'string') {
       if (attr) obj.attr(attr, value);
       else      obj.html(value);
