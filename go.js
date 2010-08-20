@@ -311,4 +311,8 @@ function set(key, value) {
     This.changed[key] = true;
     This[key] = value;
   }
-};
+}
+
+function fgo(what){ 
+  return function(){ go(what); };
+}
