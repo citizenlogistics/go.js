@@ -266,7 +266,9 @@ Function.prototype.guarded_apply = function(obj, args){
   else try {
     this.apply(obj, args);
   } catch(e) {
-    report_error('error during go(url): ' + url, e);
+    console.log(args);
+    console.log(e);
+    report_error('error during call: ', e);
   }
 };
 
