@@ -30,7 +30,7 @@ window.fbAsyncInit = function() {
   
   FB.getLoginStatus(function(response){
     if (response.session) {
-      App.fb_active_on_startup && App.fb_active_on_startup(response.session.uid)
+      App.fb_active_on_startup && App.fb_active_on_startup(response.session.uid);
     } else {
       FB.Event.subscribe('auth.login', function(response) {
         App.fb_login && App.fb_login(response.session.uid);
@@ -185,12 +185,18 @@ $(function(){
     $(this).enable();
     return false;
   });
-  
-  if (FB.init) { window.fbAsyncInit(); }
-  
+    
   if((navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i))) {
     $('body').addClass('ios');
   }
+  
+  $("body").bind("ajaxSend", function(){
+    $(this).addClass('refresh');
+  }).bind("ajaxComplete", function(event, req, settings){
+    $(this).removeClass('refresh');
+  });
+  
+  if (window.FB) { window.fbAsyncInit(); }
 });
 
 LiveHTML = { widgets: [] };
