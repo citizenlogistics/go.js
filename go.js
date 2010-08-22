@@ -2,6 +2,8 @@
 
 // jq fns used: remove, attr, val, clone, each, is, live
 
+window.App = {};
+
 var development_mode = (location.protocol == 'file:');
 
 window.onerror = function (msg, uri, line) {
@@ -263,7 +265,7 @@ $.fn.app_paint = function(){
 Function.prototype.guarded_apply = function(obj, args){
   if (development_mode) return this.apply(obj, args);
   else try {
-    this.apply(obj, args);
+    return this.apply(obj, args);
   } catch(e) {
     console.log(args);
     console.log(e);
