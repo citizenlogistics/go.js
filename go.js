@@ -18,6 +18,10 @@ if (!window.console) {
   }
 }
 
+// ============
+// = FACEBOOK =
+// ============
+
 window.fbAsyncInit = function() {
   var had_session = 'maybe';
 
