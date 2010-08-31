@@ -11,7 +11,7 @@ var This = { changed:{} };
 (function(){
   var go = function(url) {
     This.new_url = url;
-    go.trigger('rewrite_url');
+    go.trigger('going');
     if (!This.new_url) return;
     This.url = This.new_url;
     $.each(This.url.split(';'), function(){
@@ -107,7 +107,7 @@ var This = { changed:{} };
 // ============================
 
 go.install('url_handling', {
-  rewrite_url: function() {
+  going: function() {
     if (!This.new_url) return;
     var c1 = This.new_url.charAt(0);
     if (c1 != '#' && c1 != '@') return;
