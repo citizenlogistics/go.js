@@ -153,23 +153,29 @@ go.install('body_classes', {
 
 (function(){
   function fbstart() {
+    function fb_logout(response) { 
+      go.dispatch('facebook_logout') || window.location.reload();
+    }
+    
+    function fb_login(response) {
+      This.facebook_uid = response.session.uid;
+      go.trigger('facebook_login');
+    };
+
     FB.Event.subscribe('auth.sessionChange', function(response) {
       if (response.session) $('body').addClass('fb_authed');
       else $('body').removeClass('fb_authed');
     });
 
     FB.getLoginStatus(function(response){
-      if (response.session) This.facebook_uid = response.session.uid;
+      if (response.session) {
+        This.facebook_uid = response.session.uid;
+        FB.Event.subscribe('auth.logout', fb_logout);
+      }
+      else {
+        FB.Event.subscribe('auth.login', fb_login);
+      }
       go.trigger('facebook_ready');
-    });
-
-    FB.Event.subscribe('auth.logout', function(response) {
-      go.dispatch('facebook_logout') || window.location.reload();
-    });
-
-    FB.Event.subscribe('auth.login', function(response) {
-      This.facebook_uid = response.session.uid;
-      go.trigger('facebook_login');
     });
   };
 
