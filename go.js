@@ -11,15 +11,16 @@ var This = { changed:{} };
 (function(){
   var go = function(url) {
     This.new_url = url;
-    go.trigger('going');
+    go.trigger('will_change_state');
     if (!This.new_url) return;
     This.url = This.new_url;
     $.each(This.url.split(';'), function(){
       var p = this.split('=');
       go.set(p[0], unescape(p[1]));
     });
-    go.trigger('url_changed');
+    go.trigger('change_state');
     This.changed = {};
+    go.trigger('did_change_state');
   };
 
   var handlers = [];
@@ -107,21 +108,18 @@ var This = { changed:{} };
 // ============================
 
 go.install('url_handling', {
-  going: function() {
+  will_change_state: function() {
     if (!This.new_url) return;
     var c1 = This.new_url.charAt(0);
     if (c1 != '#' && c1 != '@') return;
     if (c1 == '#') go.dispatch(This.new_url.slice(1));
     if (c1 == '@') go.dispatch('at_item');
     This.new_url = null;
-  },
-  url_changed: function() {
-    console.log('go('+This.url+')');
   }
 });
 
 go.install('tool_handler', {
-  url_changed: function() {
+  change_state: function() {
     if (!This.changed.tool) return;
     $('.' + This.tool + '_tool').activate('tool');
     go('#tool_unselected');
@@ -306,7 +304,8 @@ $('form').live('submit', function(){
 (function(){
 
   go.push({
-    url_changed: function() {
+    did_change_state: function() {
+      console.log('go('+This.url+')');
       $('.hud:visible, .magic').app_paint();
     }
   });
