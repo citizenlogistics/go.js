@@ -340,6 +340,7 @@ $('form').live('submit', function(){
       var attr = parts[1];
       var value = value_for(method);
       if (!value) return obj.hide();
+      else obj.show();
       if (typeof value.valueOf() == 'string') {
         if (attr) obj.attr(attr, value);
         else      obj.html(value);
