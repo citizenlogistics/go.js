@@ -325,8 +325,16 @@ $('form').live('submit', function(){
         method = method.slice(1);
         reverse = true;
       }
-      if (!data[method]) data[method] = This[method] || go.value(method, This);
-      var result = data[method] || window[method];
+
+      var result;
+      if (!data[method]) {
+        if (This[method])  result = data[method] = This[method];
+        else {
+          var gval = go.value(method, This);
+          if (gval != go.NOT_FOUND) result = data[method] = gval;
+        }
+      }
+      if (!result) result = window[method];
       if (reverse) result = !result;
       return result;
     };
