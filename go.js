@@ -346,7 +346,8 @@ $('form').live('submit', function(){
         if (attr) obj.attr(attr, value);
         else      obj.html(value);
       } else {
-        console.log("Value ["+value+"] is not an instance of string");
+        console.log("The following value is not an instance of string:");
+        console.log(value);
       }
     });
     this.find('[if]').each(function(){
