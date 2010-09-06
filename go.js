@@ -159,6 +159,7 @@ go.install('body_classes', {
     
     function fb_login(response) {
       This.facebook_uid = response.session.uid;
+      This.login_after_page_load = true;
       go.trigger('facebook_login');
     };
 
