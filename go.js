@@ -326,14 +326,10 @@ $('form').live('submit', function(){
         reverse = true;
       }
 
-      var result;
-      if (!data[method]) {
-        if (This[method])  result = data[method] = This[method];
-        else {
-          var gval = go.value(method, This);
-          if (gval != go.NOT_FOUND) result = data[method] = gval;
-        }
-      }
+      var result, gval;
+      if (data[method])      result = data[method];
+      else if (This[method]) result = data[method] = This[method];
+      else if ((gval = go.value(method, This)) && gval !== go.NOT_FOUND) result = data[method] = gval;
       if (!result) result = window[method];
       if (reverse) result = !result;
       return result;
