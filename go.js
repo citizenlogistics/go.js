@@ -121,7 +121,6 @@ go.install('url_handling', {
 go.install('tool_handler', {
   change_state: function() {
     if (!This.changed.tool) return;
-    $('.' + This.tool + '_tool').activate('tool');
     go('#tool_unselected');
     go.install('tool', (App.tools && App.tools[This.tool]) || {});
     go('#tool_selected');
@@ -231,13 +230,17 @@ $.fn.form_values = function() {
   return obj;
 };
 
-var jqplus_activations = {};
+(function(){
+  
+  var active = {};
 
-$.fn.activate = function(space){
-  if (jqplus_activations[space]) jqplus_activations[space].removeClass('active');
-  jqplus_activations[space] = this.addClass('active');
-  return this;
-};
+  $.fn.activate = function(space){
+    if (active[space]) active[space].removeClass('active');
+    active[space] = this.addClass('active');
+    return this;
+  };
+
+})();
 
 $.fn.disable = function(){
   this.find('button,input,select,textarea').attr('disabled', true);
@@ -312,8 +315,11 @@ $('form').live('submit', function(){
 
   go.push({
     did_change_state: function() {
-      console.log('go('+This.url+')');
+      for (var thing in This.changed) {
+        $('.' + This[thing] + '_' + thing).activate(thing);
+      }
       $('.hud:visible, .magic').app_paint();
+      console.log('go('+This.url+')');
     }
   });
 
