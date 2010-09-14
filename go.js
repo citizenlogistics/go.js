@@ -296,7 +296,7 @@ $('form').live('submit', function(){
   $(this).disable();
   var result = go.value(this.id + "_submitted", This.form_data, This, this);
   if (result != "redo") {
-    $(this).find('input[type=text],textarea').each(function(){ this.value = null; });
+    $(this).find('input[type=text],input[type=password],textarea').each(function(){ this.value = null; });
   }
   $(this).enable();
   return false;
