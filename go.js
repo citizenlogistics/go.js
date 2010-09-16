@@ -299,7 +299,7 @@ $('form').live('submit', function(){
     $(this).find('input[type=text],input[type=password],textarea').each(function(){ this.value = null; });
   }
   $(this).enable();
-  return false;
+  return result == go.NOT_FOUND;
 });
 
 
