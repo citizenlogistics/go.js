@@ -10,6 +10,8 @@ var This = { changed:{} };
 
 (function(){
   var go = function(url) {
+    var parts = url.split(' ');
+    if (parts.length > 1) { url = parts.shift(); This.stack = parts; }
     This.new_url = url;
     go.trigger('will_change_state');
     if (!This.new_url) return;
@@ -53,6 +55,11 @@ var This = { changed:{} };
         if (result !== go.NOT_FOUND) return result;
       }
       return go.NOT_FOUND;
+    },
+    
+    onwards: function() {
+      if (!This.stack || This.stack.length == 0) return;
+      go(This.stack.shift());
     },
 
     dispatch: function(method, args) {
@@ -113,8 +120,11 @@ go.install('url_handling', {
     if (!This.new_url) return;
     var c1 = This.new_url.charAt(0);
     if (c1 != '#' && c1 != '@') return;
-    if (c1 == '#') go.dispatch(This.new_url.slice(1));
-    if (c1 == '@') go.dispatch('at_item');
+    if (c1 == '#') {
+      go.dispatch(This.new_url.slice(1));
+    } else if (c1 == '@') {
+      go.dispatch('at_item');
+    }
     This.new_url = null;
   }
 });
