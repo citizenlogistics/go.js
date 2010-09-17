@@ -19,8 +19,8 @@ var This = { changed:{} };
       go.set(p[0], unescape(p[1]));
     });
     go.trigger('change_state');
-    This.changed = {};
     go.trigger('did_change_state');
+    This.changed = {};
   };
 
   var handlers = [];
@@ -316,7 +316,8 @@ $('form').live('submit', function(){
   go.push({
     did_change_state: function() {
       for (var thing in This.changed) {
-        $('.' + This[thing] + '_' + thing).activate(thing);
+        var sel = '.' + This[thing] + '_' + thing;
+        $(sel).activate(thing);
       }
       $('.hud:visible, .magic').app_paint();
       console.log('go('+This.url+')');
