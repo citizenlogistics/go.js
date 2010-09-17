@@ -62,6 +62,7 @@ var This = { changed:{} };
     },
 
     trigger: function(method, args) {
+      console.log('trigger: ' + method);
       var sender = go.sender(arguments);
       $.each(handlers, function(){ sender(this); });
     },
