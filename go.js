@@ -202,12 +202,13 @@ $.template = function(sel){
 
 $.fn.validate_form_element = function(obj){
   var name = this.attr('name');
-  var title = this.attr('title');
+  var title = (this.attr('title') || name || '').capitalize();
   var required = this.attr('required');
   var pattern = this.attr('pattern');
+  var regex = pattern && new RegExp(pattern);
   var value = this.val();
-  if (required && !value) return (obj.error = (title || name) + ".  This required element is missing.");
-  if (pattern && !value.match(pattern)) return (obj.error = (title || name) + ".  This element doesn't look right.");
+  if (required && !value) return (obj.error = title + " is missing.");
+  if (regex && !value.match(regex)) return (obj.error = title + " doesn't look right.");
   obj[name] = value;
 };
 
