@@ -340,8 +340,11 @@ $('form').live('submit', function(){
   go.push({
     did_change_state: function() {
       for (var thing in This.changed) {
-        var sel = '.' + This[thing] + '_' + thing;
-        $(sel).activate(thing);
+        var value = This[thing];
+        if (value && typeof value.valueOf() == 'string') {
+          var sel = '.' + This[thing] + '_' + thing;
+          $(sel).activate(thing);
+        }
       }
       $('.hud:visible, .magic').app_paint();
       console.log('go('+This.url+')');
