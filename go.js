@@ -19,8 +19,8 @@ var This = { changed:{} };
       go.set(p[0], unescape(p[1]));
     });
     go.trigger('change_state');
-    This.changed = {};
     go.trigger('did_change_state');
+    This.changed = {};
   };
 
   var handlers = [];
@@ -62,6 +62,7 @@ var This = { changed:{} };
     },
 
     trigger: function(method, args) {
+      console.log('trigger: ' + method);
       var sender = go.sender(arguments);
       $.each(handlers, function(){ sender(this); });
     },
@@ -121,7 +122,6 @@ go.install('url_handling', {
 go.install('tool_handler', {
   change_state: function() {
     if (!This.changed.tool) return;
-    $('.' + This.tool + '_tool').activate('tool');
     go('#tool_unselected');
     go.install('tool', (App.tools && App.tools[This.tool]) || {});
     go('#tool_selected');
@@ -154,27 +154,26 @@ go.install('body_classes', {
 (function(){
   function fbstart() {
     function fb_logout(response) { 
+      $('body').removeClass('fb_authed');
       go.dispatch('facebook_logout') || window.location.reload();
     }
     
     function fb_login(response) {
       This.facebook_uid = response.session.uid;
       This.login_after_page_load = true;
+      $('body').addClass('fb_authed');
       go.trigger('facebook_login');
     };
-
-    FB.Event.subscribe('auth.sessionChange', function(response) {
-      if (response.session) $('body').addClass('fb_authed');
-      else $('body').removeClass('fb_authed');
-    });
 
     FB.getLoginStatus(function(response){
       if (response.session) {
         This.facebook_uid = response.session.uid;
         FB.Event.subscribe('auth.logout', fb_logout);
+        $('body').addClass('fb_authed');
       }
       else {
         FB.Event.subscribe('auth.login', fb_login);
+        $('body').removeClass('fb_authed');
       }
       go.trigger('facebook_ready');
     });
@@ -232,13 +231,17 @@ $.fn.form_values = function() {
   return obj;
 };
 
-var jqplus_activations = {};
+(function(){
+  
+  var active = {};
 
-$.fn.activate = function(space){
-  if (jqplus_activations[space]) jqplus_activations[space].removeClass('active');
-  jqplus_activations[space] = this.addClass('active');
-  return this;
-};
+  $.fn.activate = function(space){
+    if (active[space]) active[space].removeClass('active');
+    active[space] = this.addClass('active');
+    return this;
+  };
+
+})();
 
 $.fn.disable = function(){
   this.find('button,input,select,textarea').attr('disabled', true);
@@ -336,8 +339,12 @@ $('form').live('submit', function(){
 
   go.push({
     did_change_state: function() {
-      console.log('go('+This.url+')');
+      for (var thing in This.changed) {
+        var sel = '.' + This[thing] + '_' + thing;
+        $(sel).activate(thing);
+      }
       $('.hud:visible, .magic').app_paint();
+      console.log('go('+This.url+')');
     }
   });
 
