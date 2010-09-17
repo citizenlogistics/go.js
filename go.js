@@ -370,6 +370,7 @@ $('form').live('submit', function(){
       var value = value_for(method);
       if (!value) return obj.hide();
       else obj.show();
+      if (value.valueOf() instanceof RegExp) value = value.source;
       if (typeof value.valueOf() == 'string') {
         if (attr) obj.attr(attr, value);
         else      obj.html(value);
