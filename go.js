@@ -316,7 +316,7 @@ $.cookie = function(name, value, options) {
 // = set up live() calls =
 // =======================
 
-$('a[href],img[href],dl[href],li[href],div[href],h2[href]').live('click', function(){
+$('a[href],img[href],dl[href],li[href],div[href],h2[href],h3[href]').live('click', function(){
   var href = $(this).attr('href');
   if (!href || href.charAt(0) != "#") {
     if (this.nodeName == 'A') return true;
