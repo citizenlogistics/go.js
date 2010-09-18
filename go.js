@@ -360,7 +360,7 @@ $('form').live('submit', function(){
     did_change_state: function() {
       for (var thing in This.changed) {
         var value = This[thing];
-        if (value && typeof value.valueOf() == 'string') {
+        if (value !== undefined && value !== null && typeof value.valueOf() == 'string') {
           var sel = '.' + This[thing] + '_' + thing;
           $(sel).activate(thing);
         }
