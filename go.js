@@ -4,6 +4,13 @@ if (!window.console) window.console = {};
 if (!window.console.log) console.log = function(x){};
 var This = { changed:{} };
 
+$.extend(String.prototype, {
+  capitalize: function() {
+      return this.charAt(0).toUpperCase() + this.slice(1);
+  }
+});
+
+
 // ============
 // = basic go =
 // ============

@@ -81,10 +81,6 @@ $.extend(String.prototype, {
     return this + 's';
   },
 
-  capitalize: function() {
-      return this.charAt(0).toUpperCase() + this.slice(1);
-  },
-
   indef_article: function(){
     var vowels = 'aeiouAEIOU';
     var first_letter = this.charAt(0);
