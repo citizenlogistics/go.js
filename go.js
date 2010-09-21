@@ -76,7 +76,7 @@ $.extend(String.prototype, {
     },
 
     trigger: function(method, args) {
-      console.log('trigger: ' + method);
+      // console.log('trigger: ' + method); -- use a debug log level
       var sender = go.sender(arguments);
       $.each(handlers, function(){ sender(this); });
     },
