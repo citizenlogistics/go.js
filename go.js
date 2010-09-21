@@ -216,6 +216,16 @@ $.template = function(sel){
   return $.template(sel);
 };
 
+$.fn.store_form_value = function(obj) {
+  var name = this.attr('name');
+  if (/\[\]$/.test(name)) {
+    obj[name] = obj[name] || [];
+    obj[name].push(this.val());
+  } else {
+    obj[name] = this.val();
+  }
+};
+
 $.fn.validate_form_element = function(obj){
   var name = this.attr('name');
   var title = (this.attr('title') || name || '').capitalize();
@@ -225,7 +235,7 @@ $.fn.validate_form_element = function(obj){
   var value = this.val();
   if (required && !value) return (obj.error = title + " is missing.");
   if (regex && !value.match(regex)) return (obj.error = title + " doesn't look right.");
-  obj[name] = value;
+  this.store_form_value(obj);
 };
 
 $.fn.form_values = function() {
@@ -236,7 +246,7 @@ $.fn.form_values = function() {
     switch(el.type) {
       case "radio": // fall through
       case "checkbox":
-        if (el.checked) obj[el.name] = el.value;
+        if (el.checked) $(el).store_form_value(obj);
         break;
       case "file":
         // TODO: handle file uploads
