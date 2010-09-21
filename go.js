@@ -351,6 +351,7 @@ $('form').live('submit', function(){
   }
   var goes = $(this).attr('goes');
   if (goes) { go(goes); return false; }
+  $('input', this).blur();
   $(this).disable();
   var result = go.value(this.id + "_submitted", This.form_data, This, this);
   if (result != "redo") {
