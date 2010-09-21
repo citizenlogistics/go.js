@@ -365,7 +365,7 @@ $('form').live('submit', function(){
           $(sel).activate(thing);
         }
       }
-      $('.hud:visible, .magic').app_paint();
+      $('.hud:visible, .modal:visible, .magic').app_paint();
       console.log('go('+This.url+')');
     }
   });
