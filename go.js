@@ -409,8 +409,9 @@ $('form').live('submit', function(){
       var method = parts[0];
       var attr = parts[1];
       var value = value_for(method);
-      if (!value) return obj.hide();
+      if (!value && !attr) return obj.hide();
       else obj.show();
+      if (!value) return;
       if (value.valueOf() instanceof RegExp) value = value.source;
       if (typeof value.valueOf() == 'string') {
         if (attr) obj.attr(attr, value);
