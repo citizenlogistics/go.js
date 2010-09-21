@@ -101,6 +101,7 @@ $.extend(String.prototype, {
     },
 
     err: function(msg, e, place) {
+      if (This.bugreport) return;
       This.bugreport = msg + " at " + place;
       if (e) {
         console.log(e);
@@ -110,6 +111,7 @@ $.extend(String.prototype, {
       }
       console.log(This.bugreport);
       go.trigger('report_error');
+      This.bugreport = null;
     }
   });
 
