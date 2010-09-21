@@ -404,6 +404,19 @@ $('form').live('submit', function(){
 
   $.fn.app_paint = function(){
     var value_for = scanner();
+
+    // TODO: refactor as live() and degrade HTML5 'placeholder' attr
+    this.find('input[hint],textarea[hint]').each(function(){
+      var self = $(this);
+      var hint = self.attr('hint');
+      if (hint.charAt(0) == '#') hint = go.value(hint.slice(1));
+      self.val(hint).addClass('prompting');
+      self.focus(function(){
+        if (self.is('.prompting')) self.val('').removeClass('prompting');
+      });
+      self.blur(function(){ if (!self.val()) self.val(hint).addClass('prompting'); });
+    });
+
     this.find('[fill]').each(function(){
       var obj = $(this);
       var parts = obj.attr('fill').split(' ');
@@ -415,6 +428,7 @@ $('form').live('submit', function(){
       if (!value) return;
       if (value.valueOf() instanceof RegExp) value = value.source;
       if (typeof value.valueOf() == 'string') {
+        obj.removeClass('prompting');
         if (attr) obj.attr(attr, value);
         else      obj.html(value);
       } else {
@@ -431,19 +445,6 @@ $('form').live('submit', function(){
 
     this.find('input.focus').focus();
 
-
-    // TODO: refactor as live() and degrade HTML5 'placeholder' attr
-    this.find('input[hint],textarea[hint]').each(function(){
-      var self = $(this);
-      var hint = self.attr('hint');
-      if (hint.charAt(0) == '#') hint = go.value(hint.slice(1));
-      self.val(hint).addClass('prompting');
-      self.focus(function(){
-        if (self.is('.prompting')) self.val('').removeClass('prompting');
-      });
-      self.blur(function(){ if (!self.val()) self.val(hint).addClass('prompting'); });
-    });
-
     // TODO: refactor as live()
     this.find('[observe]').each(function(){
       var obj = $(this);
@@ -458,7 +459,6 @@ $('form').live('submit', function(){
         return true;
       });
     });
-
 
     return this;
   };
