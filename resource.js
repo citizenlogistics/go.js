@@ -44,7 +44,8 @@ $.extend(Resource.prototype, {
     else if (action.charAt(0) == ';')
       return this.db[spec] = start_db.semirepackage(action.slice(1));
 
-    return this.db[spec] = start_db[action] || [];
+    var actions = action.split('|');
+    return this.db[spec] = actions.map(function(action){ return start_db[action] || []; }).flatten();
   },
   
   add_or_update: function(tag, item, xtra) {
