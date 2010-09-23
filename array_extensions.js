@@ -19,7 +19,7 @@ $.extend(Array.prototype, {
   map: function(fn){
     fn = fn.to_func();
     var ms = [];
-    $.each(this, function(i, obj){ ms.push(fn(obj)); });
+    $.each(this, function(i, obj){ ms.push(fn(obj, i)); });
     return ms;
   },
 
