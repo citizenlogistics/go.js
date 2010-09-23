@@ -334,12 +334,10 @@ $('a[href],img[href],dl[href],li[href],div[href],h2[href],h3[href]').live('click
     if (this.nodeName == 'A') return true;
     else return window.location = href;
   }
-  if ($(this).is('.toggles.active')) {
-    go('tool=');
-    return false;
-  }
   This.clicked = this;
-  go(href.slice(1));
+  var go_url = href.slice(1);
+  if ($(this).is('.toggles.active')) go_url = go_url.replace(/=.*/, '=');
+  go(go_url);
   return false;
 });
 
