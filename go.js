@@ -262,11 +262,9 @@ $.fn.form_values = function() {
 
 (function(){
   
-  var active = {};
-
   $.fn.activate = function(space){
-    if (active[space]) active[space].removeClass('active');
-    active[space] = this.addClass('active');
+    $('[class*=_' + space + '].active').removeClass('active');
+    this.addClass('active');
     return this;
   };
 
