@@ -137,7 +137,8 @@ $.extend(Array.prototype, {
     options = options || {};
     fn = fn.to_func();
     return this.sort(function(a, b){
-      var av = fn(a), bv = fn(b);
+      var av = fn(a);
+      var bv = fn(b);
       if (options.compare == 'alpha') { av = av && av.toUpperCase(); bv = bv && bv.toUpperCase(); }
       return (options.order == 'desc' ? -1 : 1) * __compare__(av, bv);
     });
