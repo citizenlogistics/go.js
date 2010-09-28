@@ -133,10 +133,14 @@ $.extend(Array.prototype, {
     return (this.indexOf(x) == 0);
   },
   
-  sort_by: function(fn, order){
-    order = order || 1;
+  sort_by: function(fn, options){
+    options = options || {};
     fn = fn.to_func();
-    return this.sort(function(a, b){ return order * __compare__(fn(a), fn(b)); });
+    return this.sort(function(a, b){
+      var av = fn(a), bv = fn(b);
+      if (options.compare == 'alpha') { av = av && av.toUpperCase(); bv = bv && bv.toUpperCase(); }
+      return (options.order == 'desc' ? -1 : 1) * __compare__(av, bv);
+    });
   },
   
   group_by: function(field){

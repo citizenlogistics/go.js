@@ -13,7 +13,6 @@ function $keys(hash){
   return ms;
 }
 
-
 function $values(hash){
   var ms = [];
   $.each(hash, function(i, obj){ ms.push(obj); });
