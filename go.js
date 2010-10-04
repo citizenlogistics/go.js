@@ -371,7 +371,8 @@ $('form').live('submit', function(){
         var value = This[thing];
         if (value !== undefined && value !== null && typeof value.valueOf() == 'string') {
           var sel = '.' + This[thing] + '_' + thing;
-          $(sel).activate(thing);
+          // TODO: only run this if sel and thing are valid
+          try { $(sel).activate(thing); } catch(e) {}
         }
       }
       $('.hud:visible, .modal:visible, .magic').app_paint();
