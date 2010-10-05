@@ -313,13 +313,9 @@ $.cookie = function(name, value, options) {
     var cookies = document.cookie.split('; ');
     for (var i in cookies) {
       if (cookies[i].split) {
-        try {
-          var part = cookies[i].split('=');
-          if (part[0] == name) return decodeURIComponent(part[1].replace(/\+/g, ' '));
-        } catch (e) {
-          go.err('cookie decoding failed. cookie: ' + document.cookie + ', part: ' + cookies[i], e);
-          return null;
-        }
+        var part = cookies[i].split('=');
+        part[1] && part[1].replace(/\+/g, ' ');
+        if (part[0] == name) return decodeURIComponent(part[1] || '');
       }
     }
     return null;
