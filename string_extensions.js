@@ -76,9 +76,8 @@ $.extend(String.prototype, {
     return this.replace(/s$/, '');
   },
 
-  pluralize: function() {
-    if (this == 'creation') return 'creative projects';
-    return this + 's';
+  pluralize: function(count) {
+    return count == 1 ? this + '' : this + 's';
   },
 
   indef_article: function(){
