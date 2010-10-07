@@ -132,7 +132,19 @@ $.extend(Array.prototype, {
   startsWith: function(x){
     return (this.indexOf(x) == 0);
   },
-  
+
+  any: function(fn){
+    var found = false;
+    fn = fn.to_func();
+    $.each(this, function(i, obj){
+      if (fn(obj) == true) {
+        found = true;
+        return false;
+      }
+    });
+    return found;
+  },
+
   sort_by: function(fn, options){
     options = options || {};
     fn = fn.to_func();
