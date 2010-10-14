@@ -251,7 +251,7 @@ $.fn.form_values = function() {
         if (el.checked) $(el).store_form_value(obj);
         break;
       case "file":
-        // TODO: handle file uploads
+        // file uploads must be handled separately, e.g. with iframe-post-form
         break;
       default:
         $(el).validate_form_element(obj);
