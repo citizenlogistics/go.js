@@ -2,7 +2,7 @@
 
 if (!window.console) window.console = {};
 if (!window.console.log) console.log = function(x){};
-var This = { changed:{}, history:[], stack:[] };
+var This = { changed:{} };
 
 $.extend(String.prototype, {
   capitalize: function() {
@@ -17,7 +17,6 @@ $.extend(String.prototype, {
 
 (function(){
   var go = function(url) {
-    This.history.push('go: ' + url + ' ('+This.clicked.id+')');
     var parts = url.split(' ');
     if (parts.length > 1) { url = parts.shift(); This.stack = parts; }
     This.new_url = url;
@@ -77,7 +76,7 @@ $.extend(String.prototype, {
     },
 
     trigger: function(method, args) {
-      This.history.push('trigger: ' + method);
+      // console.log('trigger: ' + method); -- use a debug log level
       var sender = go.sender(arguments);
       $.each(handlers, function(){ sender(this); });
     },
@@ -102,15 +101,13 @@ $.extend(String.prototype, {
     },
 
     err: function(msg, e, place) {
-      if (This.bugreport) return; // avoid infinite loop
+      if (This.bugreport) return;
       This.bugreport = msg + " at " + place;
-      This.bugreport += "\nRecently: \n  " + This.history.join('\n  ') + '\n\n';
-      This.bugreport += "\nStack: \n  " + This.stack.join('\n  ') + '\n\n';
       if (e) {
+        console.log(e);
         This.bugreport += "\nException: " + e;
         if (window.printStackTrace)
-          This.bugreport += '\nStack trace:\n  ' + 
-            printStackTrace({e:e}).join('\n') + '\n\n';
+          This.bugreport += '\nStack trace:\n' + printStackTrace({e:e}).join('\n') + '\n\n';
       }
       console.log(This.bugreport);
       go.trigger('report_error');
@@ -132,8 +129,11 @@ go.install('url_handling', {
     if (!This.new_url) return;
     var c1 = This.new_url.charAt(0);
     if (c1 != '#' && c1 != '@') return;
-    if (c1 == '#') go.dispatch(This.new_url.slice(1)); 
-    else if (c1 == '@') go.dispatch('at_item');
+    if (c1 == '#') {
+      go.dispatch(This.new_url.slice(1));
+    } else if (c1 == '@') {
+      go.dispatch('at_item');
+    }
     This.new_url = null;
   }
 });
