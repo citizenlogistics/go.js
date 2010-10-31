@@ -50,8 +50,11 @@ $.extend(String.prototype, {
         var fn = obj[method];
         if (!fn) return go.NOT_FOUND;
         if (go.dev) return fn.apply(obj, args);
-        try { return fn.apply(obj, args); }
-        catch(e) { go.err('error: ', e, "for method " + method + " and args " + args); }
+        if (window.throw_errors) return fn.apply(obj, args);
+        else {
+          try { return fn.apply(obj, args); }
+          catch(e) { go.err('error: ', e, "for method " + method + " and args " + args); }
+        }
       };
     },
 
