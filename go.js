@@ -342,6 +342,12 @@ $('a[href],img[href],dl[href],li[href],div[href],h2[href],h3[href]').live('click
   return false;
 });
 
+$('[sets]').live('change', function(){
+  var sets = $(this).attr('sets');
+  go(sets + '=' + this.value);
+  return true;
+});
+
 $('form').live('submit', function(){
   This.form_data = $(this).form_values();
   if (This.form_data.error) {
@@ -350,8 +356,11 @@ $('form').live('submit', function(){
   }
   var goes = $(this).attr('goes');
   if (goes) { go(goes); return false; }
+  
   $('input', this).blur();
   $(this).disable();
+
+  // this is old, deprecated code
   var result = go.value(this.id + "_submitted", This.form_data, This, this);
   if (result != "redo") {
     $(this).find('input[type=text],input[type=password],textarea').each(function(){ this.value = null; });
