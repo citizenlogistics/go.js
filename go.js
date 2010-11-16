@@ -419,11 +419,16 @@ $('form').live('submit', function(){
       var self = $(this);
       var hint = self.attr('hint');
       if (hint.charAt(0) == '#') hint = go.value(hint.slice(1));
-      self.val(hint).addClass('prompting');
+      if (!self.is('.focused')) self.val(hint).addClass('prompting');
+      
       self.focus(function(){
         if (self.is('.prompting')) self.val('').removeClass('prompting');
+        self.addClass('focused');
       });
-      self.blur(function(){ if (!self.val()) self.val(hint).addClass('prompting'); });
+      self.blur(function(){ 
+        if (!self.val()) self.val(hint).addClass('prompting'); 
+        self.removeClass('focused');
+      });
     });
 
     this.find('[fill]').each(function(){
