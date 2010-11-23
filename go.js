@@ -162,7 +162,7 @@ go.install('body_classes', {
       $('body').addClass('mobile webkit');
     } else if((navigator.userAgent.match(/BlackBerry/i))) {
       $('body').addClass('mobile blackberry');
-    } else if((navigator.userAgent.match(/Opera Mobi/i))) {
+    } else if((navigator.userAgent.match(/Opera (Mini|Mobi)/i))) {
       $('body').addClass('mobile opera');
     }
     $("body").bind("ajaxSend", function(){
