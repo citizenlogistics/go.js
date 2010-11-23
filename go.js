@@ -157,7 +157,11 @@ go.install('body_classes', {
   start: function() {
     if (!This.dom_ready || This.body_classes_initialized) return;
     if((navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i))) {
-      $('body').addClass('ios');
+      $('body').addClass('ios mobile webkit');
+    } else if((navigator.userAgent.match(/Mobile Safari/i))) {
+      $('body').addClass('mobile webkit');
+    } else if((navigator.userAgent.match(/BlackBerry/i))) {
+      $('body').addClass('mobile blackberry');
     }
     $("body").bind("ajaxSend", function(){
       $(this).addClass('refresh');
