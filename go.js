@@ -49,8 +49,7 @@ $.extend(String.prototype, {
       return function(obj){
         var fn = obj[method];
         if (!fn) return go.NOT_FOUND;
-        if (go.dev) return fn.apply(obj, args);
-        if (window.throw_errors) return fn.apply(obj, args);
+        if (go.dev || window.throw_errors) return fn.apply(obj, args);
         else {
           try { return fn.apply(obj, args); }
           catch(e) { go.err('error: ', e, "for method " + method + " and args " + args); }
@@ -67,19 +66,27 @@ $.extend(String.prototype, {
       return go.NOT_FOUND;
     },
     
+    exists: function(method) {
+      for(var i=0; i<handlers.length; i++){
+        if (handlers[i][method]) return true;
+      }
+      return false;
+    },
+    
     onwards: function() {
       if (!This.stack || This.stack.length == 0) return;
       go(This.stack.shift());
     },
 
     dispatch: function(method, args) {
+      console.log('dispatch: ' + method); // use a debug log level
       var result = go.value.apply(go, arguments);
       if (result === go.NOT_FOUND) return false;
       else return true;
     },
 
     trigger: function(method, args) {
-      // console.log('trigger: ' + method); -- use a debug log level
+      // console.log('trigger: ' + method); // use a debug log level
       var sender = go.sender(arguments);
       $.each(handlers, function(){ sender(this); });
     },
@@ -355,12 +362,15 @@ $('[sets]').live('change', function(){
 });
 
 $('form').live('submit', function(){
+  var goes = $(this).attr('goes');
+  var form_name = this.id || '';
+  if (!goes && !go.exists(form_name + "_submitted")) return true;
+
   This.form_data = $(this).form_values();
   if (This.form_data.error) {
     alert(This.form_data.error);
     return false;
   }
-  var goes = $(this).attr('goes');
   if (goes) { go(goes); return false; }
   
   $('input', this).blur();
