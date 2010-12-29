@@ -252,6 +252,7 @@ $.fn.validate_form_element = function(obj){
   var regex = pattern && new RegExp(pattern);
   var value = this.val();
   if (required && !value) return (obj.error = title + " is missing.");
+  if (!value) return;
   if (regex && !value.match(regex)) return (obj.error = title + " doesn't look right.");
   this.store_form_value(obj);
 };
@@ -458,6 +459,7 @@ $('form').live('submit', function(){
       if (!value) return;
       if (value.valueOf() instanceof RegExp) value = value.source;
       if (typeof value.valueOf() == 'string') {
+        value = value.valueOf();
         obj.removeClass('prompting');
         if (attr) obj.attr(attr, value);
         else      obj.html(value);
