@@ -343,13 +343,14 @@ $.cookie = function(name, value, options) {
 // = set up live() calls =
 // =======================
 
-$('a[href],img[href],dl[href],li[href],div[href],h2[href],h3[href]').live('click', function(){
+$('a[href],img[href],dl[href],li[href],div[href],h2[href],h3[href]').live('click', function (e){
   var href = $(this).attr('href');
   if (!href || href.charAt(0) != "#") {
     if (this.nodeName == 'A') return true;
     else return window.location = href;
   }
   This.clicked = this;
+  This.event = e;
   var go_url = href.slice(1);
   if ($(this).is('.toggles.active')) go_url = go_url.replace(/=.*/, '=');
   go(go_url);
