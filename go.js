@@ -481,14 +481,15 @@ $('form').live('submit', function(){
     // TODO: refactor as live()
     this.find('[observe]').each(function(){
       var obj = $(this);
-      var methods = obj.attr('observe').split(' METHOD_SPACER ');
+      var method = obj.attr('observe');
+
       obj.change(function(){
-        $.each(methods, function(i, method) { go.dispatch(method, obj.val(), null, obj); });
+        go.dispatch(method, obj.val(), null, obj);
         return true;
       });
       obj.keydown(function(e){
         var ch = String.fromCharCode(e.which);
-        $.each(methods, function(i, method) { go.dispatch(method, obj.val(), ch, obj); });
+        go.dispatch(method, obj.val(), ch, obj);
         return true;
       });
     });
