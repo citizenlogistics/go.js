@@ -483,9 +483,7 @@ $('form').live('submit', function(){
       var obj = $(this);
       var method = obj.attr('observe');
 
-      if (method.indexOf('maxchar(') == 0) {
-        go.dispatch(method, obj.val(), null, obj);
-      }
+      go.dispatch(method, obj.val(), null, obj);
 
       obj.change(function(){
         go.dispatch(method, obj.val(), null, obj);
@@ -496,6 +494,12 @@ $('form').live('submit', function(){
         go.dispatch(method, obj.val(), ch, obj);
         return true;
       });
+    });
+
+    this.find('[make]').each(function () {
+      var obj = $(this);
+      var widget = obj.attr('make');
+      go.dispatch(widget, obj);
     });
 
     return this;
