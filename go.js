@@ -483,6 +483,10 @@ $('form').live('submit', function(){
       var obj = $(this);
       var method = obj.attr('observe');
 
+      if (method.indexOf('maxchar(') == 0) {
+        go.dispatch(method, obj.val(), null, obj);
+      }
+
       obj.change(function(){
         go.dispatch(method, obj.val(), null, obj);
         return true;
