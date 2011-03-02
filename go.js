@@ -449,25 +449,6 @@ $('form').live('submit', function(){
       });
     });
 
-
-    // TODO: refactor as live()
-    this.find('[observe]').each(function(){
-      var obj = $(this);
-      var method = obj.attr('observe');
-      go.dispatch(method, obj.val(), null, obj);
-
-      obj.change(function(){
-        go.dispatch(method, obj.val(), null, obj);
-        return true;
-      });
-      obj.keydown(function(e){
-        var ch = String.fromCharCode(e.which);
-        go.dispatch(method, obj.val(), ch, obj);
-        return true;
-      });
-    });
-
-
     this.find('[fill]').each(function(){
       var obj = $(this);
       var parts = obj.attr('fill').split(' ');
@@ -496,6 +477,21 @@ $('form').live('submit', function(){
     });
 
     this.find('input.focus').focus();
+
+    // TODO: refactor as live()
+    this.find('[observe]').each(function(){
+      var obj = $(this);
+      var methods = obj.attr('observe').split(' METHOD_SPACER ');
+      obj.change(function(){
+        $.each(methods, function(i, method) { go.dispatch(method, obj.val(), null, obj); });
+        return true;
+      });
+      obj.keydown(function(e){
+        var ch = String.fromCharCode(e.which);
+        $.each(methods, function(i, method) { go.dispatch(method, obj.val(), ch, obj); });
+        return true;
+      });
+    });
 
     return this;
   };
