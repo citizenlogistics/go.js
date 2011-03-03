@@ -380,11 +380,13 @@ $('form').live('submit', function(){
 
   // this is old, deprecated code
   var result = go.value(this.id + "_submitted", This.form_data, This, this);
+  if (result == go.NOT_FOUND) return true;
+  
   if (result != "redo") {
     $(this).find('input[type=text],input[type=password],textarea').each(function(){ this.value = null; });
   }
   $(this).enable();
-  return result == go.NOT_FOUND;
+  return false;
 });
 
 
