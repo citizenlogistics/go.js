@@ -247,7 +247,7 @@ $.fn.store_form_value = function(obj) {
 $.fn.validate_form_element = function(obj){
   var name = this.attr('name');
   var title = (this.attr('title') || name || '').capitalize();
-  var required = (!(this.attr('required') === false) || (this.attr('required') === undefined));
+  var required = !((this.attr('required') === false) || (this.attr('required') === undefined));
   var pattern = this.attr('pattern');
   var regex = pattern && new RegExp(pattern);
   var value = this.val();
