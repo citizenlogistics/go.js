@@ -331,7 +331,7 @@ $.cookie = function(name, value, options) {
     for (var i in cookies) {
       if (cookies[i].split) {
         var part = cookies[i].split('=');
-        if (part[0] == name) return decodeURIComponent(part[1] && part[1].replace(/\+/g, ' ') || '');
+        if (part[0] == name && part[1]) return decodeURIComponent(part[1] && part[1].replace(/\+/g, ' ') || '');
       }
     }
     return null;
